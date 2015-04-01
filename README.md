@@ -23,5 +23,7 @@ The script may take several minutes.
     > load('queries.js')
     > queries.<function_name>.([year])
     
+**IMPORTANT**: You may need to install the module **pymongo** or some other module. Look at the code!
+    
 
     
