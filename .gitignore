@@ -1,0 +1,7 @@
+*.csv
+*.pdf
+*.zip
+prova*.py
+test*.py
+query*.js
+csvfiles/
