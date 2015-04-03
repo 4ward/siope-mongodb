@@ -387,8 +387,7 @@ def build_collection_mdb():
 	bulk = db.mdb_codgest_entrate.initialize_unordered_bulk_op()
 
 	for el in csv_codgest_entrate:
-		el['DESCRIZIONE_CG'] = el['DESCRIZIONE_CGE']
-		del el['DESCRIZIONE_CGE']
+		el['DESCRIZIONE_CG'] = el.pop('DESCRIZIONE_CGE')
 		bulk.insert(el)
 	bulk.execute()
 
@@ -401,8 +400,7 @@ def build_collection_mdb():
 	bulk = db.mdb_codgest_uscite.initialize_unordered_bulk_op()
 
 	for el in csv_codgest_uscite:
-		el['DESCRIZIONE_CG'] = el['DESCRIZIONE_CGU']
-		del el['DESCRIZIONE_CGU']
+		el['DESCRIZIONE_CG'] = el.pop('DESCRIZIONE_CGU')
 		bulk.insert(el)
 	bulk.execute()
 
@@ -443,10 +441,8 @@ def creating_entrate_mdb():
 	
 		ente.update(cg)
 
-		e['COD_GEST'] = e['CODICE_GESTIONALE']
-		del e['CODICE_GESTIONALE']
-		e['IMPORTO'] = long(e['IMP_USCITE_ATT'] or 0)
-		del e['IMP_USCITE_ATT']
+		e['COD_GEST'] = e.pop('CODICE_GESTIONALE')
+		e['IMPORTO'] = long(e.pop('IMP_USCITE_ATT') or 0)
 		e['ANNO'] = long(e['ANNO'] or 0)
 		e['PERIODO'] = long(e['PERIODO'] or 0)
 
@@ -493,10 +489,8 @@ def creating_uscite_mdb():
 	
 		ente.update(cg)
 
-		u['COD_GEST'] = u['CODICE_GESTIONALE']
-		del u['CODICE_GESTIONALE']
-		u['IMPORTO'] = long(u['IMP_USCITE_ATT'] or 0)
-		del u['IMP_USCITE_ATT']
+		u['COD_GEST'] = u.pop('CODICE_GESTIONALE')
+		u['IMPORTO'] = long(u.pop('IMP_USCITE_ATT') or 0)
 		u['ANNO'] = long(u['ANNO'] or 0)
 		u['PERIODO'] = long(u['PERIODO'] or 0)
 
@@ -541,17 +535,12 @@ def entrate_ts():
 
 		e['_id'] = str(e['ANNO'])+'/'+str(e['PERIODO'])+'/'+str(long(e['COD_ENTE']))
 
-		importo = {	'COD_GEST' : e['COD_GEST'],
-					'DESCRIZIONE_CG' : e['DESCRIZIONE_CG'],
-					'IMPORTO' : e['IMPORTO'],
-					'DATA_INIZIO_VALIDITA' : e['DATA_INIZIO_VALIDITA'],
-					'DATA_FINE_VALIDITA' : e['DATA_FINE_VALIDITA']
+		importo = {	'COD_GEST' : e.pop('COD_GEST'),
+					'DESCRIZIONE_CG' : e.pop('DESCRIZIONE_CG'),
+					'IMPORTO' : e.pop('IMPORTO'),
+					'DATA_INIZIO_VALIDITA' : e.pop('DATA_INIZIO_VALIDITA'),
+					'DATA_FINE_VALIDITA' : e.pop('DATA_FINE_VALIDITA')
 					}
-		del e['COD_GEST']
-		del e['DESCRIZIONE_CG']
-		del e['IMPORTO']
-		del e['DATA_INIZIO_VALIDITA']
-		del e['DATA_FINE_VALIDITA']
 
 		bulk.find({'_id':e['_id']}).upsert().update({'$set':e, '$push':{'IMPORTI':importo}})
 		i += 1
@@ -579,17 +568,12 @@ def uscite_ts():
 		
 		u['_id'] = str(u['ANNO'])+'/'+str(u['PERIODO'])+'/'+str(long(u['COD_ENTE']))
 
-		importo = {	'COD_GEST' : u['COD_GEST'],
-					'DESCRIZIONE_CG' : u['DESCRIZIONE_CG'],
-					'IMPORTO' : u['IMPORTO'],
-					'DATA_INIZIO_VALIDITA' : u['DATA_INIZIO_VALIDITA'],
-					'DATA_FINE_VALIDITA' : u['DATA_FINE_VALIDITA']
+		importo = {	'COD_GEST' : u.pop('COD_GEST'),
+					'DESCRIZIONE_CG' : u.pop('DESCRIZIONE_CG'),
+					'IMPORTO' : u.pop('IMPORTO'),
+					'DATA_INIZIO_VALIDITA' : u.pop('DATA_INIZIO_VALIDITA'),
+					'DATA_FINE_VALIDITA' : u.pop('DATA_FINE_VALIDITA')
 					}
-		del u['COD_GEST']
-		del u['DESCRIZIONE_CG']
-		del u['IMPORTO']
-		del u['DATA_INIZIO_VALIDITA']
-		del u['DATA_FINE_VALIDITA']
 
 		bulk.find({'_id':u['_id']}).upsert().update({'$set':u, '$push':{'IMPORTI':importo}})
 		i += 1
