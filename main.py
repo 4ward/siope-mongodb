@@ -224,14 +224,13 @@ def csv_entrate(path):
 		for row in reader:
 			bulk.insert(row)
 			i+=1
-			if i%1000==0:
+			if i%10000==0:
 				bulk.execute()
 				bulk = db.csv_entrate.initialize_unordered_bulk_op()
-		try:		
+		try:        
 			bulk.execute()
 		except pymongo.errors.InvalidOperation:
 			pass
-
 
 def csv_uscite(path):
 
@@ -251,10 +250,10 @@ def csv_uscite(path):
 		for row in reader:
 			bulk.insert(row)
 			i+=1
-			if i%1000==0:
+			if i%10000==0:
 				bulk.execute()
 				bulk = db.csv_uscite.initialize_unordered_bulk_op()
-		try:		
+		try:        
 			bulk.execute()
 		except pymongo.errors.InvalidOperation:
 			pass
@@ -336,7 +335,7 @@ def build_collection_mdb():
 		if db.mdb_enti.find_one({'COD_ENTE':ente['COD_ENTE']}) is not None:
 			continue
 		
-		ente_r = {	'COD_ENTE' : ente['COD_ENTE'],
+		ente_r = {  'COD_ENTE' : ente['COD_ENTE'],
 					'DATA_INC_SIOPE' : ente['DATA_INC_SIOPE'],
 					'DATA_ESC_SIOPE' : ente['DATA_ESC_SIOPE'],
 					'COD_FISCALE' : ente['COD_FISCALE'],
@@ -348,7 +347,7 @@ def build_collection_mdb():
 		
 		sc = db.csv_sottocomparti.find_one({'SOTTOCOMPARTO' : ente_r['COD_SOTTOCOMPARTO']})
 		
-		ente_r.update({	'DESCR_SOTTOCOMPARTO': sc['DESCRIZIONE'],
+		ente_r.update({ 'DESCR_SOTTOCOMPARTO': sc['DESCRIZIONE'],
 						'COD_COMPARTO' : sc['COD_COMPARTO']})
 
 		c = db.csv_comparti.find_one({'COD_COMPARTO' : ente_r['COD_COMPARTO']})
@@ -357,7 +356,7 @@ def build_collection_mdb():
 
 		p = db.csv_regprov.find_one({'COD_PROVINCIA' : ente_r['COD_PROVINCIA']})
 
-		ente_r.update({	'DESCR_PROVINCIA' : p['DESCRIZIONE_PROVINCIA'],
+		ente_r.update({ 'DESCR_PROVINCIA' : p['DESCRIZIONE_PROVINCIA'],
 						'DESCR_REGIONE': p['DESCRIZIONE REGIONE'],
 						'COD_REGIONE' : p['COD_REGIONE'],
 						'RIPART_GEO' : p['RIPART_GEO']})
@@ -369,7 +368,7 @@ def build_collection_mdb():
 		bulk.insert(ente_r)
 		i += 1
 
-		if i%1000==0:
+		if i%10000==0:
 			bulk.execute()
 			bulk = db.mdb_enti.initialize_unordered_bulk_op()
 
@@ -417,16 +416,36 @@ def creating_entrate_mdb():
 	connection = pymongo.MongoClient("mongodb://localhost")
 	db = connection.siope2
 
+	db.mdb_entrate.drop()
 	db.mdb_entrate.create_index([('COD_ENTE',pymongo.ASCENDING),('ANNO',pymongo.ASCENDING),
 									('PERIODO',pymongo.ASCENDING),('COD_GEST',pymongo.ASCENDING)])
 
-	csv_entrate = db.csv_entrate.find()
+	num_documents_csv_entrate = db.csv_entrate.count()
+	index = num_documents_csv_entrate/2
+	if num_documents_csv_entrate % 2 == 0:
+		csv_entrate_head = db.csv_entrate.find().limit(index)
+		csv_entrate_tail = db.csv_entrate.find().skip(index)
+	else:
+		csv_entrate_head = db.csv_entrate.find().limit(index)
+		csv_entrate_tail = db.csv_entrate.find().skip(index)
+
+	entrateA = mp.Process(target=creating_entrate_mdb_helper, args=(csv_entrate_head,))
+	entrateB = mp.Process(target=creating_entrate_mdb_helper, args=(csv_entrate_tail,))
+	entrateA.start()
+	entrateB.start()
+	entrateA.join()
+	entrateB.join()
+
+def creating_entrate_mdb_helper(cursor):
+
+	connection = pymongo.MongoClient("mongodb://localhost")
+	db = connection.siope2
 
 	bulk = db.mdb_entrate.initialize_unordered_bulk_op()
 
 	print 'CREATING mdb_entrate'
 	i = 0
-	for e in csv_entrate:
+	for e in cursor:
 
 		result = db.mdb_entrate.find_one({'COD_ENTE':e['COD_ENTE'],'ANNO':long(e['ANNO'] or 0),'PERIODO':long(e['PERIODO'] or 0),'COD_GEST':e['CODICE_GESTIONALE']})
 		if result is not None:
@@ -451,7 +470,7 @@ def creating_entrate_mdb():
 		bulk.insert(e)
 		i += 1
 
-		if i%1000==0:
+		if i%10000==0:
 			bulk.execute()
 			bulk = db.mdb_entrate.initialize_unordered_bulk_op()
 
@@ -465,16 +484,36 @@ def creating_uscite_mdb():
 	connection = pymongo.MongoClient("mongodb://localhost")
 	db = connection.siope2
 
+	db.mdb_uscite.drop()
 	db.mdb_uscite.create_index([('COD_ENTE',pymongo.ASCENDING),('ANNO',pymongo.ASCENDING),
 									('PERIODO',pymongo.ASCENDING),('COD_GEST',pymongo.ASCENDING)])
 
-	csv_uscite = db.csv_uscite.find()
+	num_documents_csv_uscite = db.csv_uscite.count()
+	index = num_documents_csv_uscite/2
+	if num_documents_csv_uscite % 2 == 0:
+		csv_uscite_head = db.csv_uscite.find().limit(index)
+		csv_uscite_tail = db.csv_uscite.find().skip(index)
+	else:
+		csv_uscite_head = db.csv_uscite.find().limit(index)
+		csv_uscite_tail = db.csv_uscite.find().skip(index)
+
+	usciteA = mp.Process(target=creating_uscite_mdb_helper, args=(csv_uscite_head,))
+	usciteB = mp.Process(target=creating_uscite_mdb_helper, args=(csv_uscite_tail,))
+	usciteA.start()
+	usciteB.start()
+	usciteA.join()
+	usciteB.join()
+
+def creating_uscite_mdb_helper(cursor):
+
+	connection = pymongo.MongoClient("mongodb://localhost")
+	db = connection.siope2
 
 	bulk = db.mdb_uscite.initialize_unordered_bulk_op()
 
 	print 'CREATING mdb_uscite'
 	i = 0
-	for u in csv_uscite:
+	for u in cursor:
 
 		result = db.mdb_uscite.find_one({'COD_ENTE':u['COD_ENTE'],'ANNO':long(u['ANNO'] or 0),'PERIODO':long(u['PERIODO'] or 0),'COD_GEST':u['CODICE_GESTIONALE']})
 		if result is not None:
@@ -499,7 +538,7 @@ def creating_uscite_mdb():
 		bulk.insert(u)
 		i += 1
 
-		if i%1000==0:
+		if i%10000==0:
 			bulk.execute()
 			bulk = db.mdb_uscite.initialize_unordered_bulk_op()
 
@@ -535,7 +574,7 @@ def entrate_ts():
 
 		e['_id'] = str(e['ANNO'])+'/'+str(e['PERIODO'])+'/'+str(long(e['COD_ENTE']))
 
-		importo = {	'COD_GEST' : e.pop('COD_GEST'),
+		importo = { 'COD_GEST' : e.pop('COD_GEST'),
 					'DESCRIZIONE_CG' : e.pop('DESCRIZIONE_CG'),
 					'IMPORTO' : e.pop('IMPORTO'),
 					'DATA_INIZIO_VALIDITA' : e.pop('DATA_INIZIO_VALIDITA'),
@@ -544,7 +583,7 @@ def entrate_ts():
 
 		bulk.find({'_id':e['_id']}).upsert().update({'$set':e, '$push':{'IMPORTI':importo}})
 		i += 1
-		if i%1000==0:
+		if i%10000==0:
 			bulk.execute()
 			bulk = db.mdb_entrate_mensili.initialize_unordered_bulk_op()
 	try:
@@ -561,14 +600,14 @@ def uscite_ts():
 
 	mdb_uscite = db.mdb_uscite.find()
 	db.mdb_uscite_mensili.drop()
-	db.mdb_uscite_mensili.create_index([('_id',pymongo.ASCENDING)])	
+	db.mdb_uscite_mensili.create_index([('_id',pymongo.ASCENDING)]) 
 	bulk = db.mdb_uscite_mensili.initialize_unordered_bulk_op()
 	i = 0
 	for u in mdb_uscite:
 		
 		u['_id'] = str(u['ANNO'])+'/'+str(u['PERIODO'])+'/'+str(long(u['COD_ENTE']))
 
-		importo = {	'COD_GEST' : u.pop('COD_GEST'),
+		importo = { 'COD_GEST' : u.pop('COD_GEST'),
 					'DESCRIZIONE_CG' : u.pop('DESCRIZIONE_CG'),
 					'IMPORTO' : u.pop('IMPORTO'),
 					'DATA_INIZIO_VALIDITA' : u.pop('DATA_INIZIO_VALIDITA'),
@@ -577,7 +616,7 @@ def uscite_ts():
 
 		bulk.find({'_id':u['_id']}).upsert().update({'$set':u, '$push':{'IMPORTI':importo}})
 		i += 1
-		if i%1000==0:
+		if i%10000==0:
 			bulk.execute()
 			bulk = db.mdb_uscite_mensili.initialize_unordered_bulk_op()
 	try:
