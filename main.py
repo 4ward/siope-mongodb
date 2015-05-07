@@ -416,7 +416,6 @@ def creating_entrate_mdb():
 	connection = pymongo.MongoClient("mongodb://localhost")
 	db = connection.siope2
 
-	db.mdb_entrate.drop()
 	db.mdb_entrate.create_index([('COD_ENTE',pymongo.ASCENDING),('ANNO',pymongo.ASCENDING),
 									('PERIODO',pymongo.ASCENDING),('COD_GEST',pymongo.ASCENDING)])
 
@@ -483,8 +482,7 @@ def creating_uscite_mdb():
 
 	connection = pymongo.MongoClient("mongodb://localhost")
 	db = connection.siope2
-
-	db.mdb_uscite.drop()
+	
 	db.mdb_uscite.create_index([('COD_ENTE',pymongo.ASCENDING),('ANNO',pymongo.ASCENDING),
 									('PERIODO',pymongo.ASCENDING),('COD_GEST',pymongo.ASCENDING)])
 
