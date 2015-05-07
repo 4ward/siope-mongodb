@@ -413,6 +413,8 @@ def build_collection_mdb():
 
 def creating_entrate_mdb():
 
+	print 'CREATING mdb_entrate'
+
 	connection = pymongo.MongoClient("mongodb://localhost")
 	db = connection.siope2
 
@@ -442,7 +444,6 @@ def creating_entrate_mdb_helper(cursor):
 
 	bulk = db.mdb_entrate.initialize_unordered_bulk_op()
 
-	print 'CREATING mdb_entrate'
 	i = 0
 	for e in cursor:
 
@@ -480,6 +481,8 @@ def creating_entrate_mdb_helper(cursor):
 
 def creating_uscite_mdb():
 
+	print 'CREATING mdb_uscite'
+
 	connection = pymongo.MongoClient("mongodb://localhost")
 	db = connection.siope2
 	
@@ -509,7 +512,6 @@ def creating_uscite_mdb_helper(cursor):
 
 	bulk = db.mdb_uscite.initialize_unordered_bulk_op()
 
-	print 'CREATING mdb_uscite'
 	i = 0
 	for u in cursor:
 
