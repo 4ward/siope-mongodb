@@ -54,27 +54,30 @@ def retrieve_data():
 		except:
 			pass
 
+
 def entrate_aggregation():
 
 	entrate = glob.glob('ENTRATE*')
 
-	print 'AGGREGAZIONE ENTRATE NEGLI ANNI IN CORSO...'
+	print 'AGGREGATION OF INPUT...'
 	
 	with open('ENTRATE.csv', 'w') as output_file:
 		for filename in entrate:
 			with open(filename, 'r') as file:
 				copyfileobj(file, output_file, -1)
 
+
 def uscite_aggregation():
 
 	uscite = glob.glob('USCITE*')
 
-	print 'AGGREGAZIONE USCITE NEGLI ANNI IN CORSO...'
+	print 'AGGREGATION OF OUTPUT...'
 
 	with open('USCITE.csv', 'w') as output_file:
 		for filename in uscite:
 			with open(filename, 'r') as file:
 				copyfileobj(file, output_file, -1)
+
 
 def csv_enti(path):
 
@@ -96,6 +99,7 @@ def csv_enti(path):
 			bulk.insert(row)
 		bulk.execute()
 
+
 def csv_comparti(path):
 
 	print 'CREATING csv_comparti'
@@ -113,6 +117,7 @@ def csv_comparti(path):
 		for row in reader:
 			bulk.insert(row)
 		bulk.execute()
+
 
 def csv_sottocomparti(path):
 
@@ -150,6 +155,7 @@ def csv_comuni(path):
 			bulk.insert(row)
 		bulk.execute()
 
+
 def csv_regprov(path):
 
 	print 'CREATING csv_regprov'
@@ -167,6 +173,7 @@ def csv_regprov(path):
 		for row in reader:
 			bulk.insert(row)
 		bulk.execute()
+
 
 def csv_codgest_entrate(path):
 
@@ -186,6 +193,7 @@ def csv_codgest_entrate(path):
 			bulk.insert(row)
 		bulk.execute()
 
+
 def csv_codgest_uscite(path):
 
 	print 'CREATING csv_codgest_uscite'
@@ -204,6 +212,7 @@ def csv_codgest_uscite(path):
 		for row in reader:
 			bulk.insert(row)
 		bulk.execute()
+
 
 def csv_entrate(path):
 
@@ -232,6 +241,7 @@ def csv_entrate(path):
 		except pymongo.errors.InvalidOperation:
 			pass
 
+
 def csv_uscite(path):
 
 	print 'CREATING csv_uscite'
@@ -257,6 +267,7 @@ def csv_uscite(path):
 			bulk.execute()
 		except pymongo.errors.InvalidOperation:
 			pass
+
 
 def table_to_collection(download=True):
 
@@ -312,6 +323,7 @@ def table_to_collection(download=True):
 	p7.join()
 	p8.join()
 	p9.join()
+
 
 def build_collection_mdb():
 
@@ -377,7 +389,6 @@ def build_collection_mdb():
 	except pymongo.errors.InvalidOperation:
 		pass
 	
-
 	print 'CREATING mdb_codgest_entrate'
 
 	db.mdb_codgest_entrate.drop()
@@ -389,7 +400,6 @@ def build_collection_mdb():
 		el['DESCRIZIONE_CG'] = el.pop('DESCRIZIONE_CGE')
 		bulk.insert(el)
 	bulk.execute()
-
 
 	print 'CREATING mdb_codgest_uscite'
 
@@ -403,13 +413,13 @@ def build_collection_mdb():
 		bulk.insert(el)
 	bulk.execute()
 
-
 	p1 = mp.Process(target=creating_entrate_mdb)
 	p2 = mp.Process(target=creating_uscite_mdb)
 	p1.start()
 	p2.start()
 	p1.join()
 	p2.join()
+
 
 def creating_entrate_mdb():
 
@@ -436,6 +446,7 @@ def creating_entrate_mdb():
 	entrateB.start()
 	entrateA.join()
 	entrateB.join()
+
 
 def creating_entrate_mdb_helper(cursor):
 
@@ -479,6 +490,7 @@ def creating_entrate_mdb_helper(cursor):
 	except pymongo.errors.InvalidOperation:
 		pass
 
+
 def creating_uscite_mdb():
 
 	print 'CREATING mdb_uscite'
@@ -504,6 +516,7 @@ def creating_uscite_mdb():
 	usciteB.start()
 	usciteA.join()
 	usciteB.join()
+
 
 def creating_uscite_mdb_helper(cursor):
 
@@ -547,6 +560,7 @@ def creating_uscite_mdb_helper(cursor):
 	except pymongo.errors.InvalidOperation:
 		pass
 
+
 def build_timeseries():
 
 	print '*** CREATING TIME SERIES *** [Step 3/3]'
@@ -557,6 +571,7 @@ def build_timeseries():
 	p2.start()
 	p1.join()
 	p2.join()
+
 
 def entrate_ts():
 
@@ -591,6 +606,7 @@ def entrate_ts():
 	except pymongo.errors.InvalidOperation:
 		pass
 
+
 def uscite_ts():
 
 	print 'CREATING mdb_uscite_mensili'
@@ -623,6 +639,7 @@ def uscite_ts():
 		bulk.execute()
 	except pymongo.errors.InvalidOperation:
 		pass
+
 
 if __name__ == '__main__':
 
