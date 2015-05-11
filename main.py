@@ -433,12 +433,8 @@ def creating_entrate_mdb():
 
 	num_documents_csv_entrate = db.csv_entrate.count()
 	index = num_documents_csv_entrate/2
-	if num_documents_csv_entrate % 2 == 0:
-		csv_entrate_head = db.csv_entrate.find().limit(index)
-		csv_entrate_tail = db.csv_entrate.find().skip(index)
-	else:
-		csv_entrate_head = db.csv_entrate.find().limit(index)
-		csv_entrate_tail = db.csv_entrate.find().skip(index)
+	csv_entrate_head = db.csv_entrate.find().limit(index)
+	csv_entrate_tail = db.csv_entrate.find().skip(index)
 
 	entrateA = mp.Process(target=creating_entrate_mdb_helper, args=(csv_entrate_head,))
 	entrateB = mp.Process(target=creating_entrate_mdb_helper, args=(csv_entrate_tail,))
@@ -503,12 +499,8 @@ def creating_uscite_mdb():
 
 	num_documents_csv_uscite = db.csv_uscite.count()
 	index = num_documents_csv_uscite/2
-	if num_documents_csv_uscite % 2 == 0:
-		csv_uscite_head = db.csv_uscite.find().limit(index)
-		csv_uscite_tail = db.csv_uscite.find().skip(index)
-	else:
-		csv_uscite_head = db.csv_uscite.find().limit(index)
-		csv_uscite_tail = db.csv_uscite.find().skip(index)
+	csv_uscite_head = db.csv_uscite.find().limit(index)
+	csv_uscite_tail = db.csv_uscite.find().skip(index)
 
 	usciteA = mp.Process(target=creating_uscite_mdb_helper, args=(csv_uscite_head,))
 	usciteB = mp.Process(target=creating_uscite_mdb_helper, args=(csv_uscite_tail,))
