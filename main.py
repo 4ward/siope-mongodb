@@ -638,7 +638,23 @@ if __name__ == '__main__':
 	print 'SCRIPT STARTED AT:'
 	sp.call('date +"%T"', shell=True)
 
-	table_to_collection()
+	if len(sys.argv) == 1:
+		download = False
+	elif len(sys.argv) == 2:
+		if sys.argv[1].lower() == '--download=true':
+			download = True
+		elif sys.argv[1].lower() == '--download=false':
+			download = False
+		else:
+			print "You must run script without arguments (python main.py)"
+			print "Or with arguments (python main.py --download=true/false)"
+			sys.exit()
+	else:
+		print "You must run script without arguments (python main.py)"
+		print "Or with arguments (python main.py --download=true/false)"
+		sys.exit()
+
+	table_to_collection(download = download)
 	build_collection_mdb()
 	build_timeseries()
 
