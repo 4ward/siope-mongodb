@@ -27,6 +27,7 @@ Instructions:
       --port PORT       (DEFAULT: 27017) Port used by mongod process
 
 The script may take several minutes.
+** You can use pypy to speed up the process! ** (~50% faster)
 
 *queries.js* contains some sample queries. To use this:
 
