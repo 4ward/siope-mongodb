@@ -9,6 +9,7 @@ import glob
 from shutil import copyfileobj
 import zipfile
 import urllib
+import argparse
 
 #FUNCTIONS
 #retrieve data: download, unzip of files from siope website
@@ -22,6 +23,9 @@ import urllib
 
 #build_timeseries: creates collections entrate/uscite grouping by ente
 #every ente has an array of income or outcome
+
+#This is a global variable that defines socket where mongod process is running
+socket = ''
 
 def retrieve_data():
 
@@ -83,7 +87,7 @@ def csv_enti(path):
 
 	print 'CREATING csv_enti'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	db.csv_enti.drop()
@@ -104,7 +108,7 @@ def csv_comparti(path):
 
 	print 'CREATING csv_comparti'
 	
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	db.csv_comparti.drop()
@@ -123,7 +127,7 @@ def csv_sottocomparti(path):
 
 	print 'CREATING csv_sottocomparti'
 	
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	db.csv_sottocomparti.drop()
@@ -142,7 +146,7 @@ def csv_comuni(path):
 
 	print 'CREATING csv_comuni'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 	db.csv_comuni.drop()
 	bulk = db.csv_comuni.initialize_unordered_bulk_op()
@@ -160,7 +164,7 @@ def csv_regprov(path):
 
 	print 'CREATING csv_regprov'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 	db.csv_regprov.drop()
 	bulk = db.csv_regprov.initialize_unordered_bulk_op()
@@ -179,7 +183,7 @@ def csv_codgest_entrate(path):
 
 	print 'CREATING csv_codgest_entrate'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 	db.csv_codgest_entrate.drop()
 	bulk = db.csv_codgest_entrate.initialize_unordered_bulk_op()
@@ -198,7 +202,7 @@ def csv_codgest_uscite(path):
 
 	print 'CREATING csv_codgest_uscite'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	db.csv_codgest_uscite.drop()
@@ -218,7 +222,7 @@ def csv_entrate(path):
 
 	print 'CREATING csv_entrate'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	db.csv_entrate.drop()
@@ -246,7 +250,7 @@ def csv_uscite(path):
 
 	print 'CREATING csv_uscite'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 	db.csv_uscite.drop()
 	bulk = db.csv_uscite.initialize_unordered_bulk_op()
@@ -328,7 +332,7 @@ def table_to_collection(download=True):
 def build_collection_mdb():
 
 	print '*** CREATING MDB COLLECTIONS *** [Step 2/3]'
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 	
 	db.csv_sottocomparti.create_index([('SOTTOCOMPARTO',pymongo.ASCENDING)])
@@ -425,7 +429,7 @@ def creating_entrate_mdb():
 
 	print 'CREATING mdb_entrate'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	db.mdb_entrate.create_index([('COD_ENTE',pymongo.ASCENDING),('ANNO',pymongo.ASCENDING),
@@ -446,7 +450,7 @@ def creating_entrate_mdb():
 
 def creating_entrate_mdb_helper(cursor):
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	bulk = db.mdb_entrate.initialize_unordered_bulk_op()
@@ -491,7 +495,7 @@ def creating_uscite_mdb():
 
 	print 'CREATING mdb_uscite'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 	
 	db.mdb_uscite.create_index([('COD_ENTE',pymongo.ASCENDING),('ANNO',pymongo.ASCENDING),
@@ -512,7 +516,7 @@ def creating_uscite_mdb():
 
 def creating_uscite_mdb_helper(cursor):
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	bulk = db.mdb_uscite.initialize_unordered_bulk_op()
@@ -569,7 +573,7 @@ def entrate_ts():
 
 	print 'CREATING mdb_entrate_mensili'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	mdb_entrate = db.mdb_entrate.find()
@@ -603,7 +607,7 @@ def uscite_ts():
 
 	print 'CREATING mdb_uscite_mensili'
 
-	connection = pymongo.MongoClient("mongodb://localhost")
+	connection = pymongo.MongoClient(socket)
 	db = connection.siope2
 
 	mdb_uscite = db.mdb_uscite.find()
@@ -638,23 +642,15 @@ if __name__ == '__main__':
 	print 'SCRIPT STARTED AT:'
 	sp.call('date +"%T"', shell=True)
 
-	if len(sys.argv) == 1:
-		download = False
-	elif len(sys.argv) == 2:
-		if sys.argv[1].lower() == '--download=true':
-			download = True
-		elif sys.argv[1].lower() == '--download=false':
-			download = False
-		else:
-			print "You must run script without arguments (python main.py)"
-			print "Or with arguments (python main.py --download=true/false)"
-			sys.exit()
-	else:
-		print "You must run script without arguments (python main.py)"
-		print "Or with arguments (python main.py --download=true/false)"
-		sys.exit()
+	parser = argparse.ArgumentParser(description='Store Siope.it data in MongoDB')
+	parser.add_argument('--download=True', action='store_true', dest='download', default=True, help='(DEFAULT) Download data from Siope.it')
+	parser.add_argument('--download=False', action='store_false', dest='download', help='Not download data from Siope.it, you must just have them in csvfiles directory')
+	parser.add_argument('--host', action='store', dest='host', default='localhost', help='(DEFAULT: localhost) Hostname or IP address where mongod is running')
+	parser.add_argument('--port', action='store', dest='port', default='27017', help='(DEFAULT: 27017) Port used by mongod process')
+	result = parser.parse_args(sys.argv[1:])
+	socket = result.host + ':' + result.port
 
-	table_to_collection(download = download)
+	table_to_collection(download = result.download)
 	build_collection_mdb()
 	build_timeseries()
 
