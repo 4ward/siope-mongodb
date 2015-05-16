@@ -12,8 +12,20 @@ Automatic steps:
   
 Instructions:
 
-    python main.py
-    
+    usage: main.py [-h] [--download=True] [--download=False] [--host HOST]
+               [--port PORT]
+
+    Store Siope.it data in MongoDB
+
+    optional arguments:
+      -h, --help        show this help message and exit
+      --download=True   (DEFAULT) Download data from Siope.it
+      --download=False  Not download data from Siope.it, you must just have them
+                        in csvfiles directory
+      --host HOST       (DEFAULT: localhost) Hostname or IP address where mongod
+                        is running
+      --port PORT       (DEFAULT: 27017) Port used by mongod process
+
 The script may take several minutes.
 
 *queries.js* contains some sample queries. To use this:
