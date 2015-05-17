@@ -84,7 +84,7 @@ var queries = new function() {
 
 	this.entrateSanitaPerEnte = function(anno) {
 		return runTraced(function(){
-			return db.mdb_uscite_mensili.aggregate([
+			return db.mdb_entrate_mensili.aggregate([
 				{$match : {'ANNO':anno,'COD_COMPARTO':'SAN'}},
 				{$unwind: '$IMPORTI'},
 				{$group : {'_id':{'ENTE':'$DESCR_ENTE'},'Totale':{$sum:'$IMPORTI.IMPORTO'}}},
