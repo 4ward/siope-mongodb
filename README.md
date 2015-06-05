@@ -18,7 +18,7 @@ There are three automatic steps:
   	
 You can run this script every Friday to update data. 
 
-NB: 3.1 and 3.3 drop collection and recreate them. 3.2 is an incremental update.
+NB: 3.1 and 3.3 drop collections and recreate them. 3.2 is an incremental update.
   
 ##Instructions
 
