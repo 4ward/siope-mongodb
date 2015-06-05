@@ -8,26 +8,30 @@ import multiprocessing as mp
 import glob
 import subprocess as sp
 import os
-import glob
 from shutil import copyfileobj
 import zipfile
 import urllib
 import argparse
 
 #FUNCTIONS
+
+#(STEP 1)
 #retrieve data: download, unzip of files from siope website
-#entrate_aggregation
-#uscite_aggregation
-#csv_*: map csv rows to mongo documents
-#table_to_collection: calls function above
+#entrate_aggregation()
+#uscite_aggregation()
+#csv_*(): map csv rows to mongo documents
+#table_to_collection(): calls function above
 
-#build_collection_mdb: creates collections mdb_entrate and mdb_uscite 
+#(STEP 2)
+#build_collection_mdb(): creates collections mdb_*, in particular mdb_entrate/uscite
 #where each document is an income or outcome with ente's informations
+#creating_entrate_mdb() and creating_entrate_mdb() (and their helpers) 
+#are the most important functions called by build_collection_mdb
 
-#build_timeseries: creates collections entrate/uscite grouping by ente
+#build_timeseries(): creates collections entrate/uscite grouping by ente
 #every ente has an array of income or outcome
 
-#This is a global variable that defines socket where mongod process is running
+#This is a global variable that defines socket where mongod process is running on
 socket = ''
 
 def retrieve_data():
