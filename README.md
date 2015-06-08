@@ -98,7 +98,7 @@ or
 
 ...or whatever you want to do. 
     
-##Dependencies
+##Dependencies and compatibility
 
 You may need to install the module **pymongo**.
 
@@ -106,13 +106,8 @@ Link: <https://pypi.python.org/pypi/pymongo/>
 
 You can install it with pip <https://pypi.python.org/pypi/pip>
 
-For CPython
+This script has been tested with Python 2.7.6, Python 3.4.3 and PyPy 2.5.1 (Python 2.7.9).
 
-	sudo pip install pymongo
-
-For PyPy
-
-	sudo pypy -m pip install pymongo
     
     
 

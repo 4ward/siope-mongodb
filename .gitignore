@@ -3,5 +3,6 @@
 *.zip
 prova*.py
 test*.py
+*.pyc
 query*.js
 csvfiles/
