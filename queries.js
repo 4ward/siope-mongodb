@@ -23,6 +23,20 @@ var queries = new function() {
         })
     };
 
+    this.uscitePerEnte2 = function(anno) {
+        return runTraced(function(){
+            return db.mdb_uscite.aggregate([
+                {$match : {'ANNO' : anno}},
+                //{$unwind : '$IMPORTI'},
+                {$group : {_id : {'ENTE' : '$DESCR_ENTE'}, 'Totale': {$sum : '$IMPORTO'}}},
+                {$sort : {'Totale' : -1}},
+                {$project : {'Totale' : { $divide : ['$Totale', 100000000000]}}},
+                {$project : {'Totale Miliardi €' : {$divide:[{$subtract:[{$multiply:['$Totale',100]},
+                {$mod:[{$multiply:['$Totale',100]}, 1]}]},100]}}}
+                ]); 
+        })
+    };
+
     this.uscitePerEnteMR = function(anno) {
                 return runTraced(function(){
                         return db.mdb_uscite_mensili.mapReduce(
