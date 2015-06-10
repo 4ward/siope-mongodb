@@ -371,7 +371,7 @@ def build_collection_mdb():
                     'DESCR_ENTE' : ente['DESCR_ENTE'],
                     'COD_COMUNE' : ente['COD_COMUNE'],
                     'COD_PROVINCIA' : ente['COD_PROVINCIA'],
-                    'NUM_ABITANTI' : ente['NUM_ABITANTI'] or 0,
+                    'NUM_ABITANTI' : int(ente['NUM_ABITANTI'] or 0),
                     'COD_SOTTOCOMPARTO' : ente['SOTTOCOMPARTO_SIOPE']}
         
         sc = db.csv_sottocomparti.find_one({'SOTTOCOMPARTO' : ente_r['COD_SOTTOCOMPARTO']})
@@ -471,7 +471,7 @@ def creating_entrate_mdb_helper(cursor):
     i = 0
     for e in cursor:
 
-        result = db.mdb_entrate.find_one({'COD_ENTE':e['COD_ENTE'],'ANNO':e['ANNO'] or 0,'PERIODO':e['PERIODO'] or 0,'COD_GEST':e['CODICE_GESTIONALE']})
+        result = db.mdb_entrate.find_one({'COD_ENTE':e['COD_ENTE'],'ANNO':int(e['ANNO'] or 0),'PERIODO':int(e['PERIODO'] or 0),'COD_GEST':e['CODICE_GESTIONALE']})
         if result is not None:
             continue
 
@@ -485,9 +485,9 @@ def creating_entrate_mdb_helper(cursor):
         ente.update(cg)
 
         e['COD_GEST'] = e.pop('CODICE_GESTIONALE')
-        e['IMPORTO'] = e.pop('IMP_USCITE_ATT') or 0
-        e['ANNO'] = e['ANNO'] or 0
-        e['PERIODO'] = e['PERIODO'] or 0
+        e['IMPORTO'] = int(e.pop('IMP_USCITE_ATT') or 0)
+        e['ANNO'] = int(e['ANNO'] or 0)
+        e['PERIODO'] = int(e['PERIODO'] or 0)
 
         e.update(ente)
     
@@ -537,7 +537,7 @@ def creating_uscite_mdb_helper(cursor):
     i = 0
     for u in cursor:
 
-        result = db.mdb_uscite.find_one({'COD_ENTE':u['COD_ENTE'],'ANNO':u['ANNO'] or 0,'PERIODO':u['PERIODO'] or 0,'COD_GEST':u['CODICE_GESTIONALE']})
+        result = db.mdb_uscite.find_one({'COD_ENTE':u['COD_ENTE'],'ANNO':int(u['ANNO'] or 0),'PERIODO':int(u['PERIODO'] or 0),'COD_GEST':u['CODICE_GESTIONALE']})
         if result is not None:
             continue
 
@@ -551,9 +551,9 @@ def creating_uscite_mdb_helper(cursor):
         ente.update(cg)
 
         u['COD_GEST'] = u.pop('CODICE_GESTIONALE')
-        u['IMPORTO'] = u.pop('IMP_USCITE_ATT') or 0
-        u['ANNO'] = u['ANNO'] or 0
-        u['PERIODO'] = u['PERIODO'] or 0
+        u['IMPORTO'] = int(u.pop('IMP_USCITE_ATT') or 0)
+        u['ANNO'] = int(u['ANNO'] or 0)
+        u['PERIODO'] = int(u['PERIODO'] or 0)
 
         u.update(ente)
     
