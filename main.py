@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"Python Script that downloads data from Siope.it and populates siope2 db in MongoDB"
+
 __author__ = "Massimiliano Scotti"
 __license__ = "MIT License"
 
