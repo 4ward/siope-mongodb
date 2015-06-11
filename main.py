@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__author__ = "Massimiliano Scotti"
+__license__ = "MIT License"
+
 import pymongo
 import csv
 import sys
