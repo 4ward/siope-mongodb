@@ -97,6 +97,14 @@ or
 	> db.uscitePerEnteMR.find().sort({value:-1})
 
 ...or whatever you want to do. 
+
+###Indexes
+You can use *ensureIndexes.js* file to ensure new indexes on collections.
+Open and modify it as you want.
+
+To use this, run:
+
+	mongo < ensureIndexes.js
     
 ##Dependencies and compatibility
 
