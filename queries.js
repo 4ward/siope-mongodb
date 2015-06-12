@@ -23,20 +23,6 @@ var queries = new function() {
         })
     };
 
-    this.uscitePerEnte2 = function(anno) {
-        return runTraced(function(){
-            return db.mdb_uscite.aggregate([
-                {$match : {'ANNO' : anno}},
-                {$unwind : '$IMPORTI'},
-                {$group : {_id : {'ENTE' : '$DESCR_ENTE'}, 'Totale': {$sum : '$IMPORTO'}}},
-                {$sort : {'Totale' : -1}},
-                {$project : {'Totale' : { $divide : ['$Totale', 100000000000]}}},
-                {$project : {'Totale Miliardi €' : {$divide:[{$subtract:[{$multiply:['$Totale',100]},
-                {$mod:[{$multiply:['$Totale',100]}, 1]}]},100]}}}
-                ]); 
-        })
-    };
-
     this.uscitePerEnteMR = function(anno) {
                 return runTraced(function(){
                         return db.mdb_uscite_mensili.mapReduce(
@@ -67,16 +53,6 @@ var queries = new function() {
                 {$project : {'Totale Miliardi €' : {$divide:[{$subtract:[{$multiply:['$Totale',100]},
                 {$mod:[{$multiply:['$Totale',100]}, 1]}]},100]}}}
                 ]); 
-        })
-    };
-
-    this.entratePerEnte2 = function() {
-        return runTraced(function(){
-            return db.mdb_entrate_mensili.aggregate([
-                {$unwind : '$IMPORTI'},
-                {$group : {_id : {'ENTE' : '$DESCR_ENTE'}, 'Totale': {$sum : '$IMPORTI.IMPORTO'}}},
-                {$sort : {'Totale' : -1}},
-            ]); 
         })
     };
 
