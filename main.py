@@ -323,9 +323,9 @@ def table_to_collection(download=True):
     #Invert the comments of the following lines to populate your database with all the years
     #---------------------------------------------------------------------------------------
     #p8 = mp.Process(target=csv_entrate,args=(glob.glob('ENTRATE.csv')[0],)).start()
-    p8 = mp.Process(target=csv_entrate,args=(glob.glob('ENTRATE_2015*.csv')[0],))
+    p8 = mp.Process(target=csv_entrate,args=(glob.glob('ENTRATE_2014*.csv')[0],))
     #p9 = mp.Process(target=csv_uscite,args=(glob.glob('USCITE.csv')[0],)).start()
-    p9 = mp.Process(target=csv_uscite,args=(glob.glob('USCITE_2015*.csv')[0],))
+    p9 = mp.Process(target=csv_uscite,args=(glob.glob('USCITE_2014*.csv')[0],))
 
     p1.start()
     p2.start()
@@ -482,6 +482,8 @@ def creating_entrate_mdb_helper(cursor):
 
         ente = db.mdb_enti.find_one({'COD_ENTE' : e['COD_ENTE']})
         cg = db.mdb_codgest_entrate.find_one({'COD_GEST' : e['CODICE_GESTIONALE'],'COD_CATEG':ente['COD_COMPARTO']})
+        if cg is None:
+            continue
 
         del ente['_id']
         del cg['_id']
@@ -548,6 +550,8 @@ def creating_uscite_mdb_helper(cursor):
 
         ente = db.mdb_enti.find_one({'COD_ENTE' : u['COD_ENTE']})
         cg = db.mdb_codgest_uscite.find_one({'COD_GEST' : u['CODICE_GESTIONALE'],'COD_CATEG':ente['COD_COMPARTO']})
+        if cg is None:
+            continue
 
         del ente['_id']
         del cg['_id']
