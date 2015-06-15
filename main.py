@@ -77,11 +77,10 @@ def retrieve_data():
 
 
 def entrate_aggregation():
-    entrate = glob.glob('ENTRATE*')
-
     print('AGGREGATION OF INPUT...')
     if os.path.exists('ENTRATE.csv'):
         os.remove('ENTRATE.csv')
+    entrate = glob.glob('ENTRATE*')
 
     with open('ENTRATE.csv', 'w') as output_file:
         for filename in entrate:
@@ -90,11 +89,11 @@ def entrate_aggregation():
 
 
 def uscite_aggregation():
-    uscite = glob.glob('USCITE*')
-
     print('AGGREGATION OF OUTPUT...')
     if os.path.exists('USCITE.csv'):
         os.remove('USCITE.csv')
+    uscite = glob.glob('USCITE*')
+
     with open('USCITE.csv', 'w') as output_file:
         for filename in uscite:
             with open(filename, 'r') as file:
@@ -312,10 +311,10 @@ def table_to_collection(download=True):
     # ---------------------------------------------------------------------------------------
     # Invert the comments of the following lines to populate your database with all the years
     # ---------------------------------------------------------------------------------------
-    p8 = mp.Process(target=csv_entrate,args=(glob.glob('ENTRATE.csv')[0],))
-    # p8 = mp.Process(target=csv_entrate, args=(glob.glob('ENTRATE_2014*.csv')[0],))
-    p9 = mp.Process(target=csv_uscite,args=(glob.glob('USCITE.csv')[0],))
-    # p9 = mp.Process(target=csv_uscite, args=(glob.glob('USCITE_2014*.csv')[0],))
+    # p8 = mp.Process(target=csv_entrate,args=(glob.glob('ENTRATE.csv')[0],))
+    p8 = mp.Process(target=csv_entrate, args=(glob.glob('ENTRATE_2015*.csv')[0],))
+    # p9 = mp.Process(target=csv_uscite,args=(glob.glob('USCITE.csv')[0],))
+    p9 = mp.Process(target=csv_uscite, args=(glob.glob('USCITE_2015*.csv')[0],))
 
     p1.start()
     p2.start()
