@@ -153,7 +153,17 @@ var queries = new function() {
                 {$unwind : "$IMPORTI"},
                 {$group : {_id : {"CATEGORIA" : "$IMPORTI.DESCRIZIONE_CG"},"Totale": {$sum : "$IMPORTI.IMPORTO"}}},
                 {$sort : {"Totale" : -1}},{$project : {_id :0, "CATEGORIA" : "$_id.CATEGORIA", "Totale" : { $divide : ["$Totale", 100000000]}}},
-                {$project : {"CATEGORIA" : 1, "Totale milioni <E2><82><AC>" : {$divide:[{$subtract:[{$multiply:['$Totale',100]},
+                {$project : {"CATEGORIA" : 1, "Totale milioni €" : {$divide:[{$subtract:[{$multiply:['$Totale',100]},
+                {$mod:[{$multiply:['$Totale',100]}, 1]}]},100]}}}]);
+        })};
+
+    this.uscitePerEnteDettaglioSlow = function(anno, descrizioneEnte) {
+    return runTraced(function(){
+        return db.mdb_uscite.aggregate([
+                {$match : {"ANNO" : anno, "DESCR_ENTE" : descrizioneEnte}},
+                {$group : {_id : {"CATEGORIA" : "$DESCRIZIONE_CG"},"Totale": {$sum : "$IMPORTO"}}},
+                {$sort : {"Totale" : -1}},{$project : {_id :0, "CATEGORIA" : "$_id.CATEGORIA", "Totale" : { $divide : ["$Totale", 100000000]}}},
+                {$project : {"CATEGORIA" : 1, "Totale milioni €" : {$divide:[{$subtract:[{$multiply:['$Totale',100]},
                 {$mod:[{$multiply:['$Totale',100]}, 1]}]},100]}}}]);
         })};
 
