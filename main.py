@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-"Python Script that downloads data from Siope.it and populates siope2 db in MongoDB"
+# "Python Script that downloads data from Siope.it and populates siope2 db in MongoDB"
 
 __author__ = "Massimiliano Scotti"
 __license__ = "MIT License"
@@ -81,6 +80,8 @@ def entrate_aggregation():
     entrate = glob.glob('ENTRATE*')
 
     print('AGGREGATION OF INPUT...')
+    if os.path.exists('ENTRATE.csv'):
+        os.remove('ENTRATE.csv')
 
     with open('ENTRATE.csv', 'w') as output_file:
         for filename in entrate:
@@ -92,7 +93,8 @@ def uscite_aggregation():
     uscite = glob.glob('USCITE*')
 
     print('AGGREGATION OF OUTPUT...')
-
+    if os.path.exists('USCITE.csv'):
+        os.remove('USCITE.csv')
     with open('USCITE.csv', 'w') as output_file:
         for filename in uscite:
             with open(filename, 'r') as file:
