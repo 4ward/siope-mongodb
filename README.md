@@ -1,7 +1,7 @@
 # Siope Data Retriever
 
 ##What is this
-This is a Python Script that downloads data from [Siope] (https://www.siope.it) and populates **siope2** db in MongoDB.
+This is a Python Script that downloads data from [Siope] (https://www.siope.it) and populates **siope** db in MongoDB.
 
 **Siope** (Sistema Informativo delle OPerazioni degli Enti pubblici) is a system of electronic detection of collections and payments made by the cashiers of italian public services.
 
@@ -46,7 +46,7 @@ The script may take several minutes.
 *queries.js* contains some sample queries. To use this:
 
     > mongo
-    > use siope2
+    > use siope
     > load('queries.js')
     > queries.<function_name>.([year])
     
