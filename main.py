@@ -600,7 +600,7 @@ def entrate_ts():
                    'DATA_FINE_VALIDITA': e.pop('DATA_FINE_VALIDITA')
                    }
 
-        bulk.find({'_id': e['_id']}).upsert().update({'$set': e, '$push': {'IMPORTI': importo}})
+        bulk.find({'_id': e['_id']}).upsert().update({'$setOnInsert': e, '$push': {'IMPORTI': importo}})
         i += 1
         if i % 50000 == 0:
             bulk.execute()
@@ -633,7 +633,7 @@ def uscite_ts():
                    'DATA_FINE_VALIDITA': u.pop('DATA_FINE_VALIDITA')
                    }
 
-        bulk.find({'_id': u['_id']}).upsert().update({'$set': u, '$push': {'IMPORTI': importo}})
+        bulk.find({'_id': u['_id']}).upsert().update({'$setOnInsert': u, '$push': {'IMPORTI': importo}})
         i += 1
         if i % 50000 == 0:
             bulk.execute()
