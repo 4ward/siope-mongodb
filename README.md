@@ -114,7 +114,8 @@ Link: <https://pypi.python.org/pypi/pymongo/>
 
 You can install it with pip <https://pypi.python.org/pypi/pip>
 
-This script has been tested with Python 2.7.6, Python 3.4.3 and PyPy 2.5.1 (Python 2.7.9).
+This script has been tested with Python 2, Python 3 under Mac OS X and Ubuntu.
+Not tested under Windows.
 
 ##License
 
