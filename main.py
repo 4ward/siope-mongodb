@@ -50,9 +50,8 @@ def retrieve_data():
         os.remove(f)
 
     zips = ['SIOPE_ANAGRAFICHE.zip',
-            'SIOPE_USCITE.2015.zip', 'SIOPE_ENTRATE.2015.zip',
-            'SIOPE_USCITE.2014.zip', 'SIOPE_ENTRATE.2014.zip',
-            'SIOPE_USCITE.2013.zip', 'SIOPE_ENTRATE.2013.zip']
+            'SIOPE_USCITE.2016.zip', 'SIOPE_ENTRATE.2016.zip',
+            'SIOPE_USCITE.2015.zip', 'SIOPE_ENTRATE.2015.zip']
 
     for z in zips:
         print('Downloading file %s' % z)
@@ -312,9 +311,9 @@ def table_to_collection(download=True):
     # Invert the comments of the following lines to populate your database with all the years
     # ---------------------------------------------------------------------------------------
     # p8 = mp.Process(target=csv_entrate,args=(glob.glob('ENTRATE.csv')[0],))
-    p8 = mp.Process(target=csv_entrate, args=(glob.glob('ENTRATE_2015*.csv')[0],))
+    p8 = mp.Process(target=csv_entrate, args=(glob.glob('ENTRATE_2016*.csv')[0],))
     # p9 = mp.Process(target=csv_uscite,args=(glob.glob('USCITE.csv')[0],))
-    p9 = mp.Process(target=csv_uscite, args=(glob.glob('USCITE_2015*.csv')[0],))
+    p9 = mp.Process(target=csv_uscite, args=(glob.glob('USCITE_2016*.csv')[0],))
 
     p1.start()
     p2.start()
