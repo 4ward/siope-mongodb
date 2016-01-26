@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # "Python Script that downloads data from Siope.it and populates siope db in MongoDB"
+import datetime
 
 __author__ = "Massimiliano Scotti"
 __license__ = "MIT License"
@@ -10,7 +11,6 @@ import csv
 import sys
 import multiprocessing as mp
 import glob
-import subprocess as sp
 import os
 from shutil import copyfileobj
 import zipfile
@@ -442,20 +442,22 @@ def creating_entrate_mdb():
 
     num_documents_csv_entrate = db.csv_entrate.count()
     index = num_documents_csv_entrate // 2
-    csv_entrate_head = db.csv_entrate.find().limit(index)
-    csv_entrate_tail = db.csv_entrate.find().skip(index)
 
-    entrateA = mp.Process(target=creating_entrate_mdb_helper, args=(csv_entrate_head,))
-    entrateB = mp.Process(target=creating_entrate_mdb_helper, args=(csv_entrate_tail,))
+    entrateA = mp.Process(target=creating_entrate_mdb_helper, args=(0, index))
+    entrateB = mp.Process(target=creating_entrate_mdb_helper, args=(index, None))
     entrateA.start()
     entrateB.start()
     entrateA.join()
     entrateB.join()
 
 
-def creating_entrate_mdb_helper(cursor):
+def creating_entrate_mdb_helper(skip, limit):
     connection = pymongo.MongoClient(socket)
     db = connection.siope
+    if limit is not None:
+        cursor = db.csv_entrate.find().limit(limit)
+    else:
+        cursor = db.csv_entrate.find().skip(skip)
 
     bulk = db.mdb_entrate.initialize_unordered_bulk_op()
 
@@ -510,20 +512,22 @@ def creating_uscite_mdb():
 
     num_documents_csv_uscite = db.csv_uscite.count()
     index = num_documents_csv_uscite // 2
-    csv_uscite_head = db.csv_uscite.find().limit(index)
-    csv_uscite_tail = db.csv_uscite.find().skip(index)
 
-    usciteA = mp.Process(target=creating_uscite_mdb_helper, args=(csv_uscite_head,))
-    usciteB = mp.Process(target=creating_uscite_mdb_helper, args=(csv_uscite_tail,))
+    usciteA = mp.Process(target=creating_uscite_mdb_helper, args=(0, index))
+    usciteB = mp.Process(target=creating_uscite_mdb_helper, args=(index, None))
     usciteA.start()
     usciteB.start()
     usciteA.join()
     usciteB.join()
 
 
-def creating_uscite_mdb_helper(cursor):
+def creating_uscite_mdb_helper(skip, limit):
     connection = pymongo.MongoClient(socket)
     db = connection.siope
+    if limit is not None:
+        cursor = db.csv_uscite.find().limit(limit)
+    else:
+        cursor = db.csv_uscite.find().skip(skip)
 
     bulk = db.mdb_uscite.initialize_unordered_bulk_op()
 
@@ -646,7 +650,7 @@ def uscite_ts():
 
 def main():
     print('SCRIPT STARTED AT:')
-    sp.call('date +"%T"', shell=True)
+    print(datetime.datetime.today())
 
     parser = argparse.ArgumentParser(description='Store Siope.it data in MongoDB')
     parser.add_argument('--download=True', action='store_true', dest='download', default=True,
@@ -665,7 +669,7 @@ def main():
     build_timeseries()
 
     print('SCRIPT ENDED AT:')
-    sp.call('date +"%T"', shell=True)
+    print(datetime.datetime.today())
 
 
 if __name__ == '__main__':
