@@ -41,7 +41,6 @@ except ImportError:
 # every ente has an array of income or outcome
 
 # This is a global variable that defines socket where mongod process is waiting for new connections
-# Don't change it if you want to use mongodb://localhost:27017
 socket = None
 
 
@@ -311,9 +310,9 @@ def table_to_collection(download=True):
     # Invert the comments of the following lines to populate your database with all the years
     # ---------------------------------------------------------------------------------------
     # p8 = mp.Process(target=csv_entrate,args=(glob.glob('ENTRATE.csv')[0],))
-    p8 = mp.Process(target=csv_entrate, args=(glob.glob('ENTRATE_2016*.csv')[0],))
+    p8 = mp.Process(target=csv_entrate, args=(glob.glob('ENTRATE_2015*.csv')[0],))
     # p9 = mp.Process(target=csv_uscite,args=(glob.glob('USCITE.csv')[0],))
-    p9 = mp.Process(target=csv_uscite, args=(glob.glob('USCITE_2016*.csv')[0],))
+    p9 = mp.Process(target=csv_uscite, args=(glob.glob('USCITE_2015*.csv')[0],))
 
     p1.start()
     p2.start()
@@ -440,14 +439,20 @@ def creating_entrate_mdb():
                                  ('PERIODO', pymongo.ASCENDING), ('COD_GEST', pymongo.ASCENDING)])
 
     num_documents_csv_entrate = db.csv_entrate.count()
-    index = num_documents_csv_entrate // 2
+    index = num_documents_csv_entrate // 4
 
     entrateA = mp.Process(target=creating_entrate_mdb_helper, args=(0, index))
-    entrateB = mp.Process(target=creating_entrate_mdb_helper, args=(index, None))
+    entrateB = mp.Process(target=creating_entrate_mdb_helper, args=(index, index*2))
+    entrateC = mp.Process(target=creating_entrate_mdb_helper, args=(index*2, index*3))
+    entrateD = mp.Process(target=creating_entrate_mdb_helper, args=(index*3, None))
     entrateA.start()
     entrateB.start()
+    entrateC.start()
+    entrateD.start()
     entrateA.join()
     entrateB.join()
+    entrateC.join()
+    entrateD.join()
 
 
 def creating_entrate_mdb_helper(skip, limit):
@@ -510,14 +515,20 @@ def creating_uscite_mdb():
                                 ('PERIODO', pymongo.ASCENDING), ('COD_GEST', pymongo.ASCENDING)])
 
     num_documents_csv_uscite = db.csv_uscite.count()
-    index = num_documents_csv_uscite // 2
+    index = num_documents_csv_uscite // 4
 
     usciteA = mp.Process(target=creating_uscite_mdb_helper, args=(0, index))
-    usciteB = mp.Process(target=creating_uscite_mdb_helper, args=(index, None))
+    usciteB = mp.Process(target=creating_uscite_mdb_helper, args=(index, index*2))
+    usciteC = mp.Process(target=creating_uscite_mdb_helper, args=(index*2, index*3))
+    usciteD = mp.Process(target=creating_uscite_mdb_helper, args=(index*3, None))
     usciteA.start()
     usciteB.start()
+    usciteC.start()
+    usciteD.start()
     usciteA.join()
     usciteB.join()
+    usciteC.join()
+    usciteD.join()
 
 
 def creating_uscite_mdb_helper(skip, limit):
@@ -649,7 +660,8 @@ def uscite_ts():
 
 def main():
     print('SCRIPT STARTED AT:')
-    print(datetime.datetime.today())
+    start = datetime.datetime.today()
+    print(start)
 
     parser = argparse.ArgumentParser(description='Store Siope.it data in MongoDB')
     parser.add_argument('--download=True', action='store_true', dest='download', default=True,
@@ -661,14 +673,18 @@ def main():
     parser.add_argument('--port', action='store', dest='port', default='27017',
                         help='(DEFAULT: 27017) Port used by mongod process')
     result = parser.parse_args(sys.argv[1:])
-    socket = result.host + ':' + result.port
-
+    global socket
+    socket = 'mongodb://' + result.host + ':' + result.port
+    print('MongoDB socket:', socket)
     table_to_collection(download=result.download)
     build_collection_mdb()
     build_timeseries()
 
     print('SCRIPT ENDED AT:')
-    print(datetime.datetime.today())
+    end = datetime.datetime.today()
+    print(end)
+    print('TOTAL TIME:')
+    print(end-start)
 
 
 if __name__ == '__main__':
